@@ -1,0 +1,1 @@
+<?php display_users(get_users(), '<p>', '</p>'); ?>
