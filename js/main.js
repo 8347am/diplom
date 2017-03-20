@@ -40,17 +40,50 @@ var app = angular.module('chat', [], function($httpProvider) {
 		return angular.isObject(data) && String(data) !== '[object File]' ? param(data) : data;
 	}];
 });
+app.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                scope.$apply(function () {
+                    scope.fileread = changeEvent.target.files[0];
+                    // or all selected files:
+                    // scope.fileread = changeEvent.target.files;
+                });
+            });
+        }
+    }
+}]);
 app.controller('mainCtrl', function($scope, $http){
 	$scope.showCode = false;
 	$scope.message = '';
 	$scope.sendmessage = function(userid, recipientid){
-		$http.post('ajax.php', 
-		{
-			'action' : 'send_message',
-			'userid' : userid,
-			'recipientid': recipientid,
-			'message' : $scope.message,
-			'language': $scope.language
+		var fd = new FormData();
+		fd.append('action', 'send_message');
+		fd.append('userid', userid);
+		fd.append('recipientid', recipientid);
+		fd.append('message', $scope.message);
+		fd.append('language', $scope.language);
+		fd.append('fileUpload', $scope.fileUpload);
+		console.log( $scope.fileUpload);
+		$http({
+			method: 'POST',
+			url: 'ajax.php',
+			headers: {
+				"Content-Type": undefined
+			},
+			data: fd,
+			transformRequest: function (data, headersGetter) {
+				var formData = new FormData();
+				angular.forEach(data, function (value, key) {
+					formData.append(key, value);
+				});
+				var headers = headersGetter();
+				delete headers['Content-Type'];
+				return formData;
+			}
 		}).then(successCallback, onAjaxError);
 		performAjax = true;
 	}

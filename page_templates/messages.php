@@ -30,5 +30,6 @@ $recipientdata = get_users(['id' => $recipientid], 1, 0)[0];
 			<input type="radio" ng-model="language" value="text">Normal text
 			<input type="radio" ng-model="language" value="php">php
 			<input type="radio" ng-model="language" value="js">js
+			<input type="file" fileread="fileUpload">
 		</div>
 </div>

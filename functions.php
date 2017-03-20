@@ -78,16 +78,15 @@ function display_fiends($userid = 0, $before = '', $after = '', $label = 'Спи
 }
 function display_messages($userid = 0, $recipientid = 0, $before = '', $after = '', $label = 'Сообщения'){
 	if ($userid == 0) return false;
-	$messages = query_get_assoc("SELECT * FROM messages LEFT JOIN usertbl U ON userid = U.id WHERE userid = $userid AND recipientid = $recipientid ORDER BY date(created)");
+	$messages = query_get_assoc("SELECT * FROM messages LEFT JOIN file ON messages.id = file.parent_mess LEFT JOIN usertbl U ON userid = U.id WHERE userid = $userid AND recipientid = $recipientid OR userid = $recipientid AND recipientid = $userid ORDER BY date(created)");
 	echo '<p>' . $label . '</p>';
-	//
-	// Define some source to highlight, a language to use
-	// and the path to the language files
-	//
 	foreach($messages as $message){
 		$source = $message['message'];
 		$language = ($message['lang']) ? $message['lang'] : 'text';
 		echo $before .'<a href="' . get_user_url($message['userid']) . '">' . $message['name'] . ' ' . $message['subname'] . '</a>';
+		if (isset($message['path'])){
+			echo '<a href="' . SITE_URL . '/uploads/' .basename($message['path']) . '">' . basename($message['path']) . '</a>';
+		}
 		if ($language == 'text'){
 			echo $message['message'];
 		} else {
@@ -105,6 +104,25 @@ function send_message($userid = 0, $recipientid = 0, $message = '', $language = 
 	$message = addslashes($message);
 	$language = addslashes($language);
 	$result = mysql_query("INSERT INTO messages (userid, recipientid, message, lang) VALUES ($userid, $recipientid, '$message', '$language')");
+	if (mysql_affected_rows()>0){
+		$messageid=mysql_insert_id();
+		send_file($userid, $messageid);
+	}
 	if ($result) return true;
 	return false;
+}
+function send_file($userid, $messageid) {
+	if (isset($_FILES['fileUpload'])){
+		$uploaddir = SITE_DIR .'/uploads/';
+		$uploadfile = $uploaddir . basename($_FILES['fileUpload']['name']);
+		if (!move_uploaded_file($_FILES['fileUpload']['tmp_name'], $uploadfile)) {
+			return false;
+		} else {
+			$result = mysql_query("INSERT INTO file (parent_user, parent_mess, path, type) VALUES ($userid, $messageid, '$uploadfile', 'file')");
+			if ($result) return true;
+			return false;
+		}
+	}
+	return false;
+
 }
