@@ -3,7 +3,7 @@
 	get_header();
 	$page = filter_input(INPUT_GET, 'page');
 	if ($page){
-		include(SITE_DIR . '\\page_templates\\' . $page .'.php');
+		include(SITE_DIR . '/page_templates/' . $page .'.php');
 	} else {
 		include(DEFAULT_PAGE);
 	}

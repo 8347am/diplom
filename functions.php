@@ -4,10 +4,10 @@ include_once 'templates/geshi.php';
 
 function get_header(){
 	global $current_user;
-	include_once(SITE_DIR . '\templates\header.php');
+	include_once(SITE_DIR . '/templates/header.php');
 }
 function get_footer(){
-	include_once(SITE_DIR . '\templates\footer.php');
+	include_once(SITE_DIR . '/templates/footer.php');
 }
 function get_page_url($page){
 	return SITE_URL . 'index.php?page=' . $page;

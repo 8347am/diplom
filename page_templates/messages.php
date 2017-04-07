@@ -22,7 +22,7 @@ $recipientdata = get_users(['id' => $recipientid], 1, 0)[0];
 </div>
 
 <div id="message_box">
-		<div id="message_style"> 
+		<div id="message_style" data-recipient="<?php echo $recipientid;?>"> 
 			<?php display_messages($userid, $recipientid,'<p>', '</p>'); ?> 
 		</div>
 		<div class="sending-message">

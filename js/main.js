@@ -59,6 +59,7 @@ app.directive("fileread", [function () {
 app.controller('mainCtrl', function($scope, $http){
 	$scope.showCode = false;
 	$scope.message = '';
+	$scope.language = "text";
 	$scope.sendmessage = function(userid, recipientid){
 		var fd = new FormData();
 		fd.append('action', 'send_message');
@@ -94,3 +95,25 @@ app.controller('mainCtrl', function($scope, $http){
 		console.log(response);
 	}
 });
+
+function show()  
+{  
+	
+	var recipientid = jQuery('#message_style').attr('data-recipient');
+	jQuery.ajax({  
+		url: "ajax.php",  
+		method: 'POST',
+		dataType: 'json',
+		data: {'action':'get_messages', 'recipient': recipientid},
+		success: function(data){
+			console.log(data);
+			var messagesBox = $('#message_style');
+			messagesBox.empty().html(data.messages).scrollTop(messagesBox.prop("scrollHeight"));
+		}
+	});  
+}  
+
+jQuery(document).ready(function(){  
+	show();  
+	setInterval('show()',10000);  
+});  
